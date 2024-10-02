@@ -86,6 +86,8 @@ final_merge = right_join(testing, firsts, by = c("baker" = "first_Name",
 
 final_merge = arrange(final_merge, series, baker, episode)
 
+write.csv(final_merge, "./gbb_datasets/merged_gbb_data.csv")
+
 ```
 
 # Explaining Process
