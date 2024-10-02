@@ -11,68 +11,44 @@ library(tidyverse)
 library(readxl)
 ```
 
-## R Markdown
+# Problem 2
 
 ```{r}
-subways_df = read_csv(file = "./NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
-subways_df = janitor::clean_names(subways_df)
-subways_df_interests = select(subways_df, line, station_name, station_latitude,
-                              station_longitude, route1:route11, entry,
-                              vending, entrance_type, ada) 
-
-distinct_stations = nrow(distinct(subways_df_interests, line, station_name, .keep_all = FALSE))
-ada_stations = nrow(filter(subways_df_interests, ada == TRUE))
-no_vending_yes_entrances = filter(subways_df_interests, entry == 'YES', vending == 'NO')
-prop_no_vending_yes_entry = nrow(no_vending_yes_entrances)/nrow(subways_df_interests)
-
-```
-
-# Description of Subway Data
-
-This dataset contains information about the New York subway system describing each entry/exit. This dataset contains 1868 rows and 19 columns. First I imported in the csv file. Next I used janitor to clean the data efficiently. Finally I selected the columns of importance. There are 465 distinct stations. There are 468 stations that are ADA compliant. 3.7% of stations allow entry without vending.
-
-```{r}
-mutate(subways_df_interests,
-       station_line = paste(station_name,line, sep = ' '))
-
-
-```
-
-
-```{r}
-trash_df = read_excel("202309 Trash Wheel Collection Data.xlsx",
-                      sheet = 1)
-trash_df = trash_df[, -c(15:16)]
+trash_df = read_excel("202409 Trash Wheel Collection Data.xlsx",
+                      sheet = 1, cell_cols("A:N"))
 
 trash_df = janitor::clean_names(trash_df) %>%
+  drop_na(dumpster) %>%
   mutate(sports_balls = round(sports_balls)) %>%
   mutate(sports_balls = as.integer(sports_balls))
 
-name1 = rep("Mr_Trash_Wheel", nrow(trash_df))
-Mr_trash_df = cbind(name1, trash_df)
+name = rep("Mr_Trash_Wheel", nrow(trash_df))
+Mr_trash_df = cbind(name, trash_df)
 
 ###
 
-trash_df2 = read_excel("202309 Trash Wheel Collection Data.xlsx",
+trash_df2 = read_excel("202409 Trash Wheel Collection Data.xlsx",
                       sheet = 2)
 
-trash_df2 = janitor::clean_names(trash_df2)
+trash_df2 = janitor::clean_names(trash_df2) %>%
+    drop_na(dumpster)
 
-name2 = rep("Professor_Trash_Wheel", nrow(trash_df2))
-Professor_trash_df = cbind(name2, trash_df2)
+name = rep("Professor_Trash_Wheel", nrow(trash_df2))
+Professor_trash_df = cbind(name, trash_df2)
 
 ###
 
-trash_df3 = read_excel("202309 Trash Wheel Collection Data.xlsx",
+trash_df3 = read_excel("202409 Trash Wheel Collection Data.xlsx",
                       sheet = 4)
 
-trash_df3 = janitor::clean_names(trash_df3)
+trash_df3 = janitor::clean_names(trash_df3) %>%
+    drop_na(dumpster)
 
-name3 = rep("Gwynnda", nrow(trash_df3))
-Gwynnda_df = cbind(name3, trash_df3)
+name = rep("Gwynnda", nrow(trash_df3))
+Gwynnda_df = cbind(name, trash_df3)
 
 ###
 
-all_trash_df = ()
+all_trash_df = full_join(Mr_trash_df, Professor_trash_df)
 
 ```
