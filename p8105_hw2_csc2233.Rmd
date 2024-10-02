@@ -2,7 +2,9 @@
 title: "p8105_hw2_csc2233"
 author: "Cameron Chesbrough"
 date: "2024-09-27"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -54,11 +56,21 @@ Gwynnda_df = cbind(name, trash_df3)
 all_trash_df = full_join(Mr_trash_df, Professor_trash_df)
 final_trash_df = full_join(all_trash_df, Gwynnda_df)
 
+rows = nrow(final_trash_df)
+cols = ncol(final_trash_df)
+
+prof_trash_total = filter(final_trash_df, name == "Professor_Trash_Wheel")
+prof_trash_weightsum = sum(prof_trash_total$weight_tons, na.rm = TRUE)
+
+gwy_total = filter(final_trash_df,
+                   name == "Gwynnda", month == "June", year == "2022")
+gwy_cigs = sum(gwy_total$cigarette_butts, na.rm = TRUE)
+
 ```
 
 # Writeup for 2
 
-
+This dataset describes trash collecting boats and the garbage that they collect. There are `r {rows}` rows and `r {cols}` columns. Each garbage dumpster filled by the boat is recorded and information on what garbage fills the dumpster is given. The total weight of trash collected by Professor Trash Wheel is `r {prof_trash_weightsum}` tons. The total number of cigarette butts collected by Gwynnda is `r {gwy_cigs}`.
 
 # Problem 3
 
@@ -88,24 +100,39 @@ final_merge = arrange(final_merge, series, baker, episode)
 
 write.csv(final_merge, "./gbb_datasets/merged_gbb_data.csv")
 
+bake_rows = nrow(final_merge)
+bake_cols = ncol(final_merge)
+
 ```
 
 # Explaining Process
+
+I began the data cleaning process by importing the three datasets so I could look through them. After doing so I identified that the all the datasets included the first name of the baker; I decided that I would center my cleaning to focus on getting that name column as the connecting piece between the three. Besides cleaning the column names, my first step was to separate the baker name in the bakers dataset, as that was a full name and the other datasets only used first names. Next, in the bakes dataset, Jo was entered as "Jo" (with parentheses) so those needed to be removed. Similarly, in the results dataset, Jo was entered as Joanne, I needed to replace that with Jo as well. I finally was able to join the datasets together, starting with results and bakes. I tried to use all columns held in common to join them as there were some potential areas for repeats. For example, there were multiple Toms in separate series. I chose to sort my final dataset to begin with series, then by baker, then by episode. I chose this because I thought it would be a helpful way to look through the dataset, going through each series and seeing the results of each baker in the order of episodes.
+
+This completed dataset describes the show Great British Bake Off (GBB). It gives information on the seasons, episodes, bakers, foods, and results. The dataset has `r {bake_rows}` rows and `r {bake_cols}` columns.
 
 ```{r}
 
 later_winners = filter(final_merge, result %in% c("WINNER", "STAR BAKER")) %>%
   filter(series > 4) %>%
-  knitr::kable()
+  select(series, episode, baker, result, baker_age, baker_occupation) %>%
+  knitr::kable(col.names = c('Series', 'Episode', 'Baker', 'Result',
+                             'Baker Age', 'Baker Occupation'),
+               align = "cccccc")
 
 later_winners
 
 viewers_df = read_csv(file = "./gbb_datasets/viewers.csv")
 viewers_df = janitor::clean_names(viewers_df)
-viewers_df
+head(viewers_df, n=10)
+
+avg_view1 = mean(viewers_df$series_1, na.rm = TRUE) 
+avg_view5 = mean(viewers_df$series_5, na.rm = TRUE)
 
 ```
 
-# Viewership
+# Table and Viewership
 
+Looking at the table, it appears that most bakers that went on to win the competition won in at least one other round. Candice and Nadiya both won 3 other rounds besides their overall win. David is the surprise here, as he was the big winner, but that was the only round that he won. Richard is the other surprise, as he won 5 separate rounds but did not win the competition. 
 
+Looking at the viewership, the average viewership in season 1 was `r {avg_view1}` and the average viewership in season 5 was `r {avg_view5}`.
