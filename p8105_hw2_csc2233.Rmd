@@ -66,12 +66,14 @@ final_trash_df = full_join(all_trash_df, Gwynnda_df)
 
 bakers_df = read_csv(file = "./gbb_datasets/bakers.csv")
 bakes_df = read_csv(file = "./gbb_datasets/bakes.csv")
-results_df = read_csv(file = "./gbb_datasets/results.csv")
+results_df = read_csv(file = "./gbb_datasets/results.csv", skip = 2)
 
 bakers_df = janitor::clean_names(bakers_df)
 bakes_df = janitor::clean_names(bakes_df)
 results_df = janitor::clean_names(results_df)
 
+firsts = separate(bakers_df, col = baker_name, c("first_Name","last_Name"))
+bakes_df$baker = str_replace_all(bakes_df$baker, '"', "")
 
 
 ```
