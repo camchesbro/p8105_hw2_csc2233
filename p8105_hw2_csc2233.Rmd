@@ -70,10 +70,40 @@ results_df = read_csv(file = "./gbb_datasets/results.csv", skip = 2)
 
 bakers_df = janitor::clean_names(bakers_df)
 bakes_df = janitor::clean_names(bakes_df)
-results_df = janitor::clean_names(results_df)
+results_df = janitor::clean_names(results_df) %>%
+  drop_na(result)
 
 firsts = separate(bakers_df, col = baker_name, c("first_Name","last_Name"))
 bakes_df$baker = str_replace_all(bakes_df$baker, '"', "")
+results_df$baker = str_replace_all(results_df$baker, 'Joanne', "Jo")
 
+testing = full_join(results_df, bakes_df, by = c("episode" = "episode",
+                                                  "series" = "series",
+                                                  "baker" = "baker"))
+
+final_merge = right_join(testing, firsts, by = c("baker" = "first_Name",
+                                                 "series" = "series"))
+
+final_merge = arrange(final_merge, series, baker, episode)
 
 ```
+
+# Explaining Process
+
+```{r}
+
+later_winners = filter(final_merge, result %in% c("WINNER", "STAR BAKER")) %>%
+  filter(series > 4) %>%
+  knitr::kable()
+
+later_winners
+
+viewers_df = read_csv(file = "./gbb_datasets/viewers.csv")
+viewers_df = janitor::clean_names(viewers_df)
+viewers_df
+
+```
+
+# Viewership
+
+
